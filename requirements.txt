@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+pandas
+requests
+python-multipart
+pydantic
