@@ -4,3 +4,7 @@ pandas
 requests
 python-multipart
 pydantic
+numpy
+scikit-learn
+matplotlib
+yfinance
