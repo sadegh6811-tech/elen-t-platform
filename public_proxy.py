@@ -207,3 +207,20 @@ async def security_logs():
         return {"success": True, "logs": random.sample(logs, k=random.randint(2, 4))}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+
+@app.get("/api/market/analysis")
+async def market_analysis():
+    try:
+        # شبیه‌سازی داده‌های تحلیل بازار
+        data = {
+            "pair": "XAU/USD",
+            "price": "2345.50",
+            "trend": "Bullish",
+            "confidence": 87,
+            "forecast": [2320, 2335, 2345, 2360, 2380],
+            "recommendation": "Buy on dips"
+        }
+        return {"success": True, "data": data}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
