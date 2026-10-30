@@ -189,3 +189,21 @@ async def math_discover(request: Request):
         return {"success": True, "result": result}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+
+import random
+from datetime import datetime
+
+@app.get("/api/security/logs")
+async def security_logs():
+    try:
+        # شبیه‌سازی لاگ‌های هانی‌پات (در نسخه واقعی به security_engine.py وصل می‌شود)
+        logs = [
+            {"time": datetime.now().strftime("%H:%M:%S"), "type": "SQL Injection", "ip": "192.168.1.45", "status": "Blocked"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "type": "Port Scan", "ip": "10.0.0.12", "status": "Honeypot Triggered"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "type": "Brute Force", "ip": "203.0.113.88", "status": "Blocked"},
+            {"time": datetime.now().strftime("%H:%M:%S"), "type": "Path Traversal", "ip": "198.51.100.7", "status": "Honeypot Triggered"}
+        ]
+        return {"success": True, "logs": random.sample(logs, k=random.randint(2, 4))}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
