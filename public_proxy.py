@@ -151,96 +151,97 @@ async def register(request: Request):
     except Exception as e:
         return {"success": False, "message": str(e)}
 
+
+
+import jwt
+import datetime
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import time
+import threading
+
+# --- تنظیمات سپر امنیتی ---
+SECRET_KEY = "ELEN_SUPER_SECRET_KEY_2026" # در نسخه واقعی در .env قرار می‌گیرد
+ALGORITHM = "HS256"
+security = HTTPBearer()
+SYSTEM_LOCKDOWN = False
+LOCKDOWN_TIMER = None
+
+def unlock_system():
+    global SYSTEM_LOCKDOWN
+    time.sleep(180) # ۳ دقیقه قفل
+    SYSTEM_LOCKDOWN = False
+    print("🔓 سیستم پس از فروکش کردن تهدید، دوباره باز شد.")
+
+def trigger_lockdown():
+    global SYSTEM_LOCKDOWN, LOCKDOWN_TIMER
+    if not SYSTEM_LOCKDOWN:
+        SYSTEM_LOCKDOWN = True
+        print("🚨 حمله تشخیص داده شد! سیستم به حالت Lockdown رفت.")
+        if LOCKDOWN_TIMER is None or not LOCKDOWN_TIMER.is_alive():
+            LOCKDOWN_TIMER = threading.Thread(target=unlock_system)
+            LOCKDOWN_TIMER.daemon = True
+            LOCKDOWN_TIMER.start()
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if SYSTEM_LOCKDOWN:
+        raise HTTPException(status_code=503, detail="سیستم به دلیل تهدید امنیتی موقتا قفل شده است.")
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        trigger_lockdown() # توکن منقضی شده = احتمال حمله
+        raise HTTPException(status_code=401, detail="توکن منقضی شده است")
+    except jwt.InvalidTokenError:
+        trigger_lockdown() # توکن نامعتبر = حمله
+        raise HTTPException(status_code=401, detail="توکن نامعتبر است")
+
+# --- API لاگین (صدور توکن) ---
 @app.post("/api/login")
 async def login(request: Request):
-    try:
-        data = await request.json()
-        username = data.get("username")
-        password = data.get("password")
-        
-        conn = sqlite3.connect('elen_users.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, hash_password(password)))
-        user = c.fetchone()
-        conn.close()
-        
-        if user:
-            return {"success": True, "message": "✅ Connected to ELEN Core successfully!"}
-        else:
-            return {"success": False, "message": "نام کاربری یا رمز عبور اشتباه است"}
-    except Exception as e:
-        return {"success": False, "message": str(e)}
+    data = await request.json()
+    username = data.get("username")
+    password = data.get("password")
+    
+    # (در نسخه نهایی با دیتابیس چک می‌شود، فعلا برای تست هر یوزر/پسی قبول است)
+    if username and password:
+        expire = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        token = jwt.encode({"sub": username, "exp": expire}, SECRET_KEY, algorithm=ALGORITHM)
+        return {"success": True, "token": token, "message": "✅ Connected securely."}
+    else:
+        trigger_lockdown() # تلاش برای لاگین خالی = حمله
+        return {"success": False, "message": "اطلاعات ناقص"}
 
-
-import random
-
+# --- موتورها (محافظت‌شده با JWT و Lockdown) ---
 @app.post("/api/math/discover")
-async def math_discover(request: Request):
-    try:
-        # شبیه‌سازی موتور کشف (در نسخه واقعی، اینجا به Mathbot شما وصل می‌شود)
-        patterns = [
-            {"type": "چندجمله‌ای درجه ۲ (سهمی)", "formula": "y = 2.5x^2 - 3.1x + 4.0", "r2": 0.984},
-            {"type": "تابع مثلثاتی (سینوسی)", "formula": "y = 1.5 * sin(2.3x)", "r2": 0.951},
-            {"type": "تابع نمایی", "formula": "y = 0.8 * e^(0.4x)", "r2": 0.992},
-            {"type": "تابع لگاریتمی", "formula": "y = 3.2 * log(x) + 1.1", "r2": 0.913},
-            {"type": "چندجمله‌ای درجه ۱ (خطی)", "formula": "y = 4.5x - 2.0", "r2": 0.999}
-        ]
-        result = random.choice(patterns)
-        return {"success": True, "result": result}
-    except Exception as e:
-        return {"success": False, "message": str(e)}
-
-
-import random
-from datetime import datetime
-
-@app.get("/api/security/logs")
-async def security_logs():
-    try:
-        # شبیه‌سازی لاگ‌های هانی‌پات (در نسخه واقعی به security_engine.py وصل می‌شود)
-        logs = [
-            {"time": datetime.now().strftime("%H:%M:%S"), "type": "SQL Injection", "ip": "192.168.1.45", "status": "Blocked"},
-            {"time": datetime.now().strftime("%H:%M:%S"), "type": "Port Scan", "ip": "10.0.0.12", "status": "Honeypot Triggered"},
-            {"time": datetime.now().strftime("%H:%M:%S"), "type": "Brute Force", "ip": "203.0.113.88", "status": "Blocked"},
-            {"time": datetime.now().strftime("%H:%M:%S"), "type": "Path Traversal", "ip": "198.51.100.7", "status": "Honeypot Triggered"}
-        ]
-        return {"success": True, "logs": random.sample(logs, k=random.randint(2, 4))}
-    except Exception as e:
-        return {"success": False, "message": str(e)}
-
+async def math_discover(user: dict = Depends(verify_token)):
+    import random
+    patterns = [{"type": "چندجمله‌ای درجه ۲", "formula": "y = 2.5x^2 - 3.1x", "r2": 0.984}]
+    return {"success": True, "result": random.choice(patterns)}
 
 @app.get("/api/market/analysis")
-async def market_analysis():
-    try:
-        # شبیه‌سازی داده‌های تحلیل بازار
-        data = {
-            "pair": "XAU/USD",
-            "price": "2345.50",
-            "trend": "Bullish",
-            "confidence": 87,
-            "forecast": [2320, 2335, 2345, 2360, 2380],
-            "recommendation": "Buy on dips"
-        }
-        return {"success": True, "data": data}
-    except Exception as e:
-        return {"success": False, "message": str(e)}
+async def market_analysis(user: dict = Depends(verify_token)):
+    data = {"pair": "XAU/USD", "current_price": "2345.50", "trend": "Bullish", "timeframe": "4H", "signal": "BUY", "entry_zone": ["2320.00", "2325.00"], "stop_loss": "2305.00", "take_profit_1": "2360.00", "take_profit_2": "2380.00", "confidence": 87, "risk_reward": "1:3.5"}
+    return {"success": True, "data": data}
 
-
-import subprocess
-import sys
-
-
-
-import subprocess
-import sys
+@app.get("/api/security/logs")
+async def security_logs(user: dict = Depends(verify_token)):
+    # در صورت درخواست بیش از حد، سیستم را قفل کن
+    logs = [{"time": "11:41:29", "type": "Port Scan", "ip": "10.0.0.12", "status": "Honeypot Triggered"}]
+    return {"success": True, "logs": logs}
 
 @app.get("/api/karami/trade")
-async def karami_trade():
+async def karami_trade(user: dict = Depends(verify_token)):
     try:
-        # اجرا با تنظیم پوشه کاری روی karami
         result = subprocess.run([sys.executable, "master_sensor.py"], capture_output=True, text=True, timeout=120, cwd="karami")
         if result.returncode != 0:
             return {"success": False, "message": "خطا در اجرای موتور", "log": result.stderr}
         return {"success": True, "log": result.stdout}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+# --- دکمه اضطراری (برای تست سنسور) ---
+@app.post("/api/security/panic")
+async def trigger_panic():
+    trigger_lockdown()
+    return {"message": "Lockdown activated"}
