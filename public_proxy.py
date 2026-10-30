@@ -111,13 +111,81 @@ if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000, access_log=False)
 
 # --- ELEN Auth Endpoint (Added via Deploy-Bot) ---
-@app.post("/api/login")
-async def elen_login(request: Request):
+
+
+import sqlite3
+import hashlib
+
+def init_db():
+    conn = sqlite3.connect('elen_users.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, password TEXT)''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+@app.post("/api/register")
+async def register(request: Request):
     try:
         data = await request.json()
-        print(f"🔐 درخواست ورود دریافت شد: {data}")
-        # سنسور امنیتی شما می‌تواند اینجا فعال شود
-        return {"success": True, "message": "✅ Connected to ELEN Core successfully!"}
+        username = data.get("username")
+        password = data.get("password")
+        if not username or not password:
+            return {"success": False, "message": "نام کاربری و رمز عبور الزامی است"}
+        
+        conn = sqlite3.connect('elen_users.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username=?", (username,))
+        if c.fetchone():
+            conn.close()
+            return {"success": False, "message": "این نام کاربری قبلا ثبت شده است"}
+        
+        c.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, hash_password(password)))
+        conn.commit()
+        conn.close()
+        return {"success": True, "message": "ثبت‌نام با موفقیت انجام شد"}
     except Exception as e:
-        return {"success": False, "error": str(e)}
-# -------------------------------------------------
+        return {"success": False, "message": str(e)}
+
+@app.post("/api/login")
+async def login(request: Request):
+    try:
+        data = await request.json()
+        username = data.get("username")
+        password = data.get("password")
+        
+        conn = sqlite3.connect('elen_users.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username=? AND password=?", (username, hash_password(password)))
+        user = c.fetchone()
+        conn.close()
+        
+        if user:
+            return {"success": True, "message": "✅ Connected to ELEN Core successfully!"}
+        else:
+            return {"success": False, "message": "نام کاربری یا رمز عبور اشتباه است"}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
+
+
+import random
+
+@app.post("/api/math/discover")
+async def math_discover(request: Request):
+    try:
+        # شبیه‌سازی موتور کشف (در نسخه واقعی، اینجا به Mathbot شما وصل می‌شود)
+        patterns = [
+            {"type": "چندجمله‌ای درجه ۲ (سهمی)", "formula": "y = 2.5x^2 - 3.1x + 4.0", "r2": 0.984},
+            {"type": "تابع مثلثاتی (سینوسی)", "formula": "y = 1.5 * sin(2.3x)", "r2": 0.951},
+            {"type": "تابع نمایی", "formula": "y = 0.8 * e^(0.4x)", "r2": 0.992},
+            {"type": "تابع لگاریتمی", "formula": "y = 3.2 * log(x) + 1.1", "r2": 0.913},
+            {"type": "چندجمله‌ای درجه ۱ (خطی)", "formula": "y = 4.5x - 2.0", "r2": 0.999}
+        ]
+        result = random.choice(patterns)
+        return {"success": True, "result": result}
+    except Exception as e:
+        return {"success": False, "message": str(e)}
