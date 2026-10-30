@@ -224,3 +224,27 @@ async def market_analysis():
         return {"success": True, "data": data}
     except Exception as e:
         return {"success": False, "message": str(e)}
+
+
+import subprocess
+import sys
+
+@app.get("/api/karami/trade")
+async def karami_trade():
+    try:
+        # اجرای اسکریپت master_sensor.py در پوشه karami
+        result = subprocess.run(
+            [sys.executable, "karami/master_sensor.py"],
+            capture_output=True, text=True, timeout=60
+        )
+        
+        # اگر خطایی در اجرا وجود داشت
+        if result.returncode != 0:
+            return {"success": False, "message": "خطا در اجرای موتور", "log": result.stderr}
+
+        return {
+            "success": True, 
+            "log": result.stdout
+        }
+    except Exception as e:
+        return {"success": False, "message": str(e)}
