@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from security_sensor import SecuritySensor
 from security_engine import SecurityEngine
 
-app = FastAPI(title="Elen-MathBot Public Gateway (Secured)")
+app = FastAPI(title="Elen-MathBot Public Gateway (Secured, redirect_slashes=False)")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["POST", "GET"], allow_headers=["*"])
 
 # متغیرهای محیطی
