@@ -1,0 +1,5 @@
+ngrok.tgz
+node_modules/
+*.log
+.env
+__pycache__/
