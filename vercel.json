@@ -1,6 +1,5 @@
 {
   "buildCommand": "cd auth-portal && npm install && npm run build",
   "outputDirectory": "auth-portal/dist",
-  "framework": "vite",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "framework": "vite"
 }
