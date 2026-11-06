@@ -15,3 +15,12 @@ __pycache__/
 *.bak*
 *.backup*
 *.log
+
+# Core Proprietary Engines (Do Not Upload)
+engine_*.py
+v13_core.py
+security_*.py
+shadow_*.py
+public_proxy.py
+public_proxy.py.*
+lab_1024d_*.py
