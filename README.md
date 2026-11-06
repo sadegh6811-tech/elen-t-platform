@@ -37,9 +37,6 @@ ELEN-T is not a single script, but an ecosystem of specialized engines:
 
 ---
 
-
----
-
 ## 🌌 Conquering High Dimensions: The 1024D Log-Space Breakthrough
 
 High-dimensional feature spaces (e.g., 128D, 1024D) cause the "Curse of Dimensionality", making standard GP fail. However, we discovered that combining **Log-Space Feature Compression** with a sufficiently deep GP tree (`max_nodes=35`) yields incredible results.
@@ -52,25 +49,22 @@ High-dimensional feature spaces (e.g., 128D, 1024D) cause the "Curse of Dimensio
 
 This proves that ELEN-T, guided by smart feature engineering (like log-compression), can solve extreme high-dimensional problems on a mobile device.
 
+---
 
 ## 🚀 Quick Start
 
 1. **Install dependencies:**
+   ```bash
    pip install numpy pandas sympy
+from engine_v31 import ElenT
 
-2. **Run the Fair Fight Benchmark (9D Physics):**
-   python benchmarks/phase35_fair_fight.py
-   *Expected Output: GP wins against Poly-Ridge with R2 > 0.94.*
+# Load your data (numpy array or pandas DataFrame)
+X, y = load_your_data() 
 
----
+# Initialize and discover
+model = ElenT(max_nodes=35, generations=80)
+model.fit(X, y)
 
-## ⚠️ Limitations (Read Before Using)
-
-1. **Not Universal:** GP is a specialized tool. It excels at non-polynomial structures (exp, sqrt, division) but can struggle with highly nested exponential functions (like Gompertz).
-2. **Hardware Constraints:** While it runs on a phone, 128D+ searches can take significant time (minutes to hours depending on generations).
-3. **Outputs are Suggestions:** Discovered formulas must be validated by domain experts. They are not medical or financial advice.
-
----
-
-## 📜 License
-MIT License. See LICENSE for details.
+# Print the discovered formula and R2 score
+print(f"Discovered: {model.formula_}")
+print(f"R2 Score: {model.r2_score_}")
