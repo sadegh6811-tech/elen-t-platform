@@ -1,5 +1,17 @@
-ngrok.tgz
+# Web & Node.js
+auth-portal/
+auth-portal-clean/
 node_modules/
-*.log
-.env
+dist/
+*.tgz
+
+# Python
 __pycache__/
+*.pyc
+.env
+.venv/
+
+# Backups & Logs
+*.bak*
+*.backup*
+*.log
