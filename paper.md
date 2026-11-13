@@ -49,7 +49,7 @@ Elen-k is distributed under the MIT license.
 
 - **Repository:** https://github.com/sadegh6811-tech/elen-t8888
 - **Documentation:** `README.md`
-- **Archived version:** Zenodo DOI to be added after the v0.2.0 release
+- **Archived version:** https://doi.org/10.5281/zenodo.24196035
 
 # References
 
