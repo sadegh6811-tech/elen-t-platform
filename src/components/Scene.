@@ -1,0 +1,62 @@
+import type { ReactNode } from "react";
+
+type Accent = "cyan" | "purple" | "green";
+
+const accentMap: Record<Accent, { border: string; glow: string; line: string; text: string }> = {
+  cyan: {
+    border: "border-cyan-400/20",
+    glow: "shadow-[0_0_25px_rgba(34,211,238,0.12)]",
+    line: "from-transparent via-cyan-400 to-transparent",
+    text: "text-cyan-300",
+  },
+  purple: {
+    border: "border-purple-400/20",
+    glow: "shadow-[0_0_25px_rgba(168,85,247,0.12)]",
+    line: "from-transparent via-purple-400 to-transparent",
+    text: "text-purple-300",
+  },
+  green: {
+    border: "border-emerald-400/20",
+    glow: "shadow-[0_0_25px_rgba(52,211,153,0.12)]",
+    line: "from-transparent via-emerald-400 to-transparent",
+    text: "text-emerald-300",
+  },
+};
+
+interface GlassPanelProps {
+  title: string;
+  subtitle: string;
+  icon: ReactNode;
+  accent: Accent;
+  badge?: ReactNode;
+  children: ReactNode;
+  className?: string;
+}
+
+export default function GlassPanel({ title, subtitle, icon, accent, badge, children, className = "" }: GlassPanelProps) {
+  const a = accentMap[accent];
+  return (
+    <section className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border bg-black/40 backdrop-blur-xl ${a.border} ${a.glow} ${className}`}>
+      <div className={`absolute inset-x-6 top-0 h-px bg-gradient-to-r ${a.line}`} />
+      <span className="pointer-events-none absolute right-2 top-2 h-3 w-3 border-r border-t border-white/30" />
+      <span className="pointer-events-none absolute left-2 top-2 h-3 w-3 border-l border-t border-white/30" />
+      <span className="pointer-events-none absolute bottom-2 right-2 h-3 w-3 border-b border-r border-white/30" />
+      <span className="pointer-events-none absolute bottom-2 left-2 h-3 w-3 border-b border-l border-white/30" />
+
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/5 ${a.text}`}>
+            {icon}
+          </div>
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-bold text-white">{title}</h2>
+            <p className="truncate text-[11px] text-slate-400">{subtitle}</p>
+          </div>
+        </div>
+        {badge}
+      </header>
+
+      <div className="relative flex min-h-0 flex-1 flex-col">{children}</div>
+    </section>
+  );
+}

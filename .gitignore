@@ -1,0 +1,44 @@
+# Node & Next.js
+node_modules/
+.next/
+out/
+build/
+.vercel/
+
+# Environment Variables (CRITICAL)
+.env
+.env.local
+.env.production
+.vercel_token
+
+# Logs
+*.log
+
+# 🚨 BLOCKING CORE ENGINE & RESEARCH DATA (CRITICAL) 🚨
+*.py
+*.pyc
+__pycache__/
+*.csv
+*.tex
+*.pdf
+*.svg
+*.bak
+*.backup
+*.backup2
+*.bak_*
+mathbot/
+backend/
+src_backup/
+data_*.csv
+lab_*.py
+physics_*.py
+frohlich_*.py
+quantum_*.py
+lindblad_*
+test_*.py
+fix_*.py
+patch_*.py
+*.sh
+
+# Allow specific files if needed (uncomment if you have TS/JS scripts you want)
+# !some_script.js
