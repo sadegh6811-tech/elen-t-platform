@@ -5,7 +5,7 @@ export async function POST() {
     const token = process.env.VERCEL_TOKEN;
     
     if (!token) {
-      return NextResponse.json({ error: 'VERCEL_TOKEN not configured in Vercel Environment Variables' }, { status: 500 });
+      return NextResponse.json({ error: 'VERCEL_TOKEN not configured' }, { status: 500 });
     }
 
     const response = await fetch('https://api.vercel.com/v13/deployments', {
@@ -18,7 +18,8 @@ export async function POST() {
         name: 'elen', 
         gitSource: {
           type: 'github',
-          repoId: 'sadegh6811-tech/elen-t8888',
+          org: 'sadegh6811-tech',
+          repo: 'elen-t8888',
           ref: 'main',
         },
       }),
