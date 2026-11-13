@@ -15,10 +15,11 @@ export async function POST(req: Request) {
 
     await client.connect();
     
+    // ⚠️ اینجا نام ستون را با نام واقعی دیتابیس خود جایگزین کنید (مثلاً pdb یا pdb_string)
     const query = `
-      INSERT INTO molecular_structures (id, name, pdb_data)
+      INSERT INTO molecular_structures (id, name, pdb) 
       VALUES ($1, $2, $3)
-      ON CONFLICT (id) DO UPDATE SET pdb_data = EXCLUDED.pdb_data;
+      ON CONFLICT (id) DO UPDATE SET pdb = EXCLUDED.pdb;
     `;
     
     await client.query(query, [id, name, pdbData]);
