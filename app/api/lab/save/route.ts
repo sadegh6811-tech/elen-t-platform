@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/src/db';
-import { sql } from 'drizzle-orm';
+import { Client } from 'pg';
 
 export async function POST(req: Request) {
   try {
@@ -9,11 +8,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
-    await db.execute(sql`
+    const client = new Client({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+
+    await client.connect();
+    
+    const query = `
       INSERT INTO molecular_structures (id, name, pdb_data)
-      VALUES (${id}, ${name}, ${pdbData})
+      VALUES ($1, $2, $3)
       ON CONFLICT (id) DO UPDATE SET pdb_data = EXCLUDED.pdb_data;
-    `);
+    `;
+    
+    await client.query(query, [id, name, pdbData]);
+    await client.end();
 
     return NextResponse.json({ success: true, message: "Saved successfully to Neon!" });
   } catch (error: any) {
