@@ -21,30 +21,36 @@ export async function GET(req: Request) {
     }
 
     if (id.length === 4) {
-      const rcsbRes = await fetch(`https://files.rcsb.org/download/${id}.pdb`);
+      // 👇 این خط مهم‌ترین تغییر است: cache: 'no-store' از کش شدن جلوگیری می‌کند
+      const rcsbRes = await fetch(`https://files.rcsb.org/download/${id}.pdb`, { cache: 'no-store' });
+      
       if (rcsbRes.ok) {
         const pdbText = await rcsbRes.text();
-        const atomCount = (pdbText.match(/^ATOM/gm) || []).length;
         
-        try {
-          await db.insert(molecularStructures).values({
-            pdbId: id,
-            name: 'RCSB Structure',
-            atomCount: atomCount,
-            pdbContent: pdbText
-          }).onConflictDoNothing();
-        } catch(e) { console.error('DB Save error:', e); }
+        // اگر فایل معتبر بود (بیشتر از ۱۰۰۰ کاراکتر)
+        if (pdbText.length > 1000) {
+            const atomCount = (pdbText.match(/^ATOM/gm) || []).length;
+            
+            try {
+              await db.insert(molecularStructures).values({
+                pdbId: id,
+                name: 'RCSB Structure',
+                atomCount: atomCount,
+                pdbContent: pdbText
+              }).onConflictDoNothing();
+            } catch(e) { console.error('DB Save error:', e); }
 
-        return NextResponse.json({
-          pdbId: id,
-          name: 'RCSB Structure',
-          atomCount: atomCount,
-          pdbData: pdbText
-        });
+            return NextResponse.json({
+              pdbId: id,
+              name: 'RCSB Structure',
+              atomCount: atomCount,
+              pdbData: pdbText
+            });
+        }
       }
     }
 
-    return NextResponse.json({ error: 'Structure not found' }, { status: 404 });
+    return NextResponse.json({ error: 'Structure not found or incomplete' }, { status: 404 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
