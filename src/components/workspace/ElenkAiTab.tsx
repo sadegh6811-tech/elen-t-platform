@@ -76,7 +76,7 @@ export default function ElenkAiTab({ initialMessages = [], activePdbId = "1CRN",
               await fetch("/api/lab/save", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pdbId: generatedPdbId, pdbContent: pdbContentToSave, metadata: pdbMetadata }),
+                body: JSON.stringify({ id: generatedPdbId, name: pdbMetadata?.name || "AI Generated DNA", pdbData: pdbContentToSave }),
               });
             }
           }
