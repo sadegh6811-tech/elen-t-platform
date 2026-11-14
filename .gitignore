@@ -42,3 +42,5 @@ patch_*.py
 
 # Allow specific files if needed (uncomment if you have TS/JS scripts you want)
 # !some_script.js
+.vercel
+.env*

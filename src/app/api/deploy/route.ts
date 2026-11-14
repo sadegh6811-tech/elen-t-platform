@@ -1,17 +1,36 @@
-import { NextResponse } from "next/server";
-import { Pool } from "pg";
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+import { NextResponse } from 'next/server';
 
 export async function POST() {
   try {
-    // ارسال دستور به جدول engine_jobs
-    await pool.query(
-      `INSERT INTO engine_jobs (command, status) VALUES ($1, 'pending')`,
-      ["[RUN_DEPLOY]"]
-    );
-    return NextResponse.json({ success: true, message: "Deploy command queued." });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    const token = process.env.VERCEL_TOKEN;
+    
+    if (!token) {
+      return NextResponse.json({ error: 'VERCEL_TOKEN not configured' }, { status: 500 });
+    }
+
+    const response = await fetch('https://api.vercel.com/v13/deployments', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'elen', 
+        gitSource: {
+          type: 'github',
+          org: 'sadegh6811-tech',
+          repo: 'elen-t8888',
+          ref: 'main',
+        },
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) throw new Error(data.error?.message || 'Deploy failed');
+
+    return NextResponse.json({ success: true, message: "Deployment triggered successfully!" });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
