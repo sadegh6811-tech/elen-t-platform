@@ -8,6 +8,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
     }
 
+    // شمارش خودکار اتم‌ها
+    const atomCount = (pdbData.match(/^ATOM/gm) || []).length;
+
     const client = new Client({
       connectionString: process.env.DATABASE_URL,
       ssl: { rejectUnauthorized: false }
@@ -15,17 +18,19 @@ export async function POST(req: Request) {
 
     await client.connect();
     
-    // استفاده از نام دقیق ستون‌ها: pdb_id و pdb_content
+    // آپدیت دیتابیس با احتساب atomCount
     const query = `
-      INSERT INTO molecular_structures (pdb_id, name, pdb_content) 
-      VALUES ($1, $2, $3)
-      ON CONFLICT (pdb_id) DO UPDATE SET pdb_content = EXCLUDED.pdb_content;
+      INSERT INTO molecular_structures (pdb_id, name, pdb_content, atom_count) 
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (pdb_id) DO UPDATE SET 
+        pdb_content = EXCLUDED.pdb_content,
+        atom_count = EXCLUDED.atom_count;
     `;
     
-    await client.query(query, [id, name, pdbData]);
+    await client.query(query, [id, name, pdbData, atomCount]);
     await client.end();
 
-    return NextResponse.json({ success: true, message: "Saved successfully to Neon!" });
+    return NextResponse.json({ success: true, message: `Saved! (${atomCount} atoms)` });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
