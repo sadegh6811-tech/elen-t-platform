@@ -73,7 +73,7 @@ export default function ElenkAiTab({ initialMessages = [], activePdbId = "1CRN",
 
             // ذخیره ساختار در دیتابیس
             if (generatedPdbId && pdbContentToSave) {
-              await fetch("/api/lab/dna-structure", {
+              await fetch("/api/lab/save", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ pdbId: generatedPdbId, pdbContent: pdbContentToSave, metadata: pdbMetadata }),
