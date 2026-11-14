@@ -44,3 +44,12 @@ patch_*.py
 # !some_script.js
 .vercel
 .env*
+
+# Temporary test files
+upload_chip.js
+dna_chip_lattice.pdb
+check_db_columns.js
+upload_helix_to_vercel.js
+upload_tetra.js
+upload_to_vercel.js
+dna_helix.pdb
