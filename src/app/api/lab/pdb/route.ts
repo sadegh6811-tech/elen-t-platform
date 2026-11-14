@@ -11,7 +11,8 @@ export async function GET(req: Request) {
   try {
     const [record] = await db.select().from(molecularStructures).where(eq(molecularStructures.pdbId, id));
 
-    if (record && record.pdbContent && record.pdbContent.includes('ATOM')) {
+    // 👇 شرط اصلاح شد: فقط اگر خطی با ATOM شروع شود
+    if (record && record.pdbContent && /^ATOM/m.test(record.pdbContent)) {
       return NextResponse.json({
         pdbId: record.pdbId,
         name: record.name || 'Unknown',
@@ -21,23 +22,25 @@ export async function GET(req: Request) {
     }
 
     if (id.length === 4) {
-      // 👇 این خط مهم‌ترین تغییر است: cache: 'no-store' از کش شدن جلوگیری می‌کند
       const rcsbRes = await fetch(`https://files.rcsb.org/download/${id}.pdb`, { cache: 'no-store' });
       
       if (rcsbRes.ok) {
         const pdbText = await rcsbRes.text();
+        const atomCount = (pdbText.match(/^ATOM/gm) || []).length;
         
-        // اگر فایل معتبر بود (بیشتر از ۱۰۰۰ کاراکتر)
-        if (pdbText.length > 1000) {
-            const atomCount = (pdbText.match(/^ATOM/gm) || []).length;
-            
+        // اگر دیتای دریافتی معتبر بود (اتم داشت)
+        if (atomCount > 0) {
             try {
+              // 👇 از onConflictDoUpdate استفاده می‌کنیم تا دیتای خراب قبلی را با دیتای کامل جایگزین کند
               await db.insert(molecularStructures).values({
                 pdbId: id,
                 name: 'RCSB Structure',
                 atomCount: atomCount,
                 pdbContent: pdbText
-              }).onConflictDoNothing();
+              }).onConflictDoUpdate({
+                target: molecularStructures.pdbId,
+                set: { pdbContent: pdbText, atomCount: atomCount }
+              });
             } catch(e) { console.error('DB Save error:', e); }
 
             return NextResponse.json({
