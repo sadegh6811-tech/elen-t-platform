@@ -76,7 +76,14 @@ export default function ElenkWorkspace({ initialRuns, initialDeployments, initia
             {activeTab === "monitor" && <MonitorTab activePdbId={activePdbId} />}
             {activeTab === "deploy-bot" && <DeployBotTab initialDeployments={initialDeployments} />}
             {activeTab === "termux" && <TermuxTab initialEntries={initialTerminal} activePdbId={activePdbId} onSyncPdb={handleSyncPdbFromTermux} />}
-            {activeTab === "elenk-ai" && <ElenkAiTab initialMessages={initialAiMessages} activePdbId={activePdbId} />}
+            {activeTab === "elenk-ai" && <ElenkAiTab 
+  initialMessages={initialAiMessages} 
+  activePdbId={activePdbId} 
+  onPdbGenerated={(newPdbId: string) => {
+    setActivePdbId(newPdbId);
+    setActiveTab("lab");
+  }} 
+/>}
           </motion.div>
         </AnimatePresence>
       </main>
