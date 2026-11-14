@@ -15,7 +15,7 @@ const Mol3DViewport = dynamic(() => import("@/components/workspace/Mol3DViewport
 export default function MolecularLab({ activePdbId: externalPdbId, onActivePdbChange }: any) {
   const [pdbData, setPdbData] = useState<string>("");
   const [representation, setRepresentation] = useState<MolecularRepresentation>("ball-stick");
-  const [pdbInput, setPdbInput] = useState<string>(externalPdbId || "DNA_CUBE_01");
+  const [pdbInput, setPdbInput] = useState<string>(externalPdbId || "DNA_HELIX_01");
   const [loadedPdbId, setLoadedPdbId] = useState<string>("");
   const [meta, setMeta] = useState<any>(null);
   const [isLoadingPdb, setIsLoadingPdb] = useState<boolean>(false);
@@ -70,7 +70,7 @@ export default function MolecularLab({ activePdbId: externalPdbId, onActivePdbCh
   }, [onActivePdbChange]);
 
   useEffect(() => {
-    loadPdbStructure(externalPdbId || "DNA_CUBE_01");
+    loadPdbStructure(externalPdbId || "DNA_HELIX_01");
   }, []);
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function MolecularLab({ activePdbId: externalPdbId, onActivePdbCh
           <div className="glass-holo rounded-2xl p-4">
             <div className="mb-3 flex items-center gap-2"><Search className="h-4 w-4 text-cyan-400" /><h2 className="font-mono text-xs font-semibold uppercase text-slate-200">Load Structure</h2></div>
             <form onSubmit={(e) => { e.preventDefault(); loadPdbStructure(pdbInput); }} className="flex gap-2">
-              <input type="text" value={pdbInput} onChange={(e) => setPdbInput(e.target.value.toUpperCase())} className="flex-1 rounded-xl border border-cyan-500/25 bg-black/60 py-2.5 pl-3 pr-3 font-mono text-sm text-cyan-100 focus:border-cyan-400 focus:outline-none" placeholder="DNA_CUBE_01" />
+              <input type="text" value={pdbInput} onChange={(e) => setPdbInput(e.target.value.toUpperCase())} className="flex-1 rounded-xl border border-cyan-500/25 bg-black/60 py-2.5 pl-3 pr-3 font-mono text-sm text-cyan-100 focus:border-cyan-400 focus:outline-none" placeholder="DNA_HELIX_01" />
               <button type="submit" disabled={isLoadingPdb} className="rounded-xl border border-cyan-400/50 bg-cyan-500/25 px-4 py-2.5 font-mono text-xs font-semibold text-cyan-200 disabled:opacity-50">
                 {isLoadingPdb ? <Loader2 className="h-4 w-4 animate-spin" /> : "LOAD"}
               </button>
