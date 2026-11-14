@@ -111,7 +111,7 @@ export default function MolecularLab({ activePdbId: externalPdbId, onActivePdbCh
         </div>
 
         <div className="order-1 lg:order-2 lg:col-span-5">
-          <div className="glass-holo relative flex h-[380px] flex-col overflow-hidden rounded-2xl sm:h-[460px] lg:h-[580px]">
+          <div className="glass-holo relative flex w-full flex-col overflow-hidden rounded-2xl" style={{ height: "500px" }}>
             <div className="relative z-10 flex-1 w-full min-h-[300px]">
               <Mol3DViewport pdbData={pdbData} representation={representation} isSpinning={true} isSimulating={false} onControlsReady={() => {}} onWebGLError={(m: string) => setWebglError(m)} />
             </div>
