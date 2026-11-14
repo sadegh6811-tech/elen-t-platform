@@ -32,6 +32,7 @@ export default function Mol3DViewport({ pdbData, representation, isSpinning, isS
         }
         container.innerHTML = "";
 
+        // ایجاد نمایشگر
         const viewer = $3Dmol.createViewer(container, {
           backgroundColor: "#050505",
         });
@@ -50,6 +51,11 @@ export default function Mol3DViewport({ pdbData, representation, isSpinning, isS
         viewer.zoomTo();
         viewer.render();
 
+        // یک رندر مجدد کوچک بعد از باز شدن کامل صفحه
+        setTimeout(() => {
+            try { viewer.resize(); viewer.render(); } catch(e) {}
+        }, 500);
+
         if (isSpinning) viewer.spin("y");
       } catch (e: any) {
         console.error("3D Viewer Error:", e);
@@ -60,5 +66,6 @@ export default function Mol3DViewport({ pdbData, representation, isSpinning, isS
     return () => { cancelled = true; };
   }, [pdbData, representation, isSpinning]);
 
-  return <div ref={viewerRef} className="h-full w-full" />;
+  // اضافه کردن حداقل ارتفاع و position: relative برای اطمینان از رندر شدن
+  return <div ref={viewerRef} className="h-full w-full" style={{ minHeight: "400px", position: "relative" }} />;
 }
