@@ -1,0 +1,22 @@
+{
+  "Ridge": {
+    "R2_mean": 0.6796,
+    "R2_std": 0.0291,
+    "RMSE": 1.1812
+  },
+  "RandomForest": {
+    "R2_mean": 0.823,
+    "R2_std": 0.0208,
+    "RMSE": 0.8776
+  },
+  "GradientBoosting": {
+    "R2_mean": 0.8371,
+    "R2_std": 0.0219,
+    "RMSE": 0.8417
+  },
+  "Elen-t": {
+    "R2_mean": 0.5523,
+    "R2_std": 0.0385,
+    "RMSE": 1.3966
+  }
+}

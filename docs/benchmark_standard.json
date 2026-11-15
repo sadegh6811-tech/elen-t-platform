@@ -1,0 +1,56 @@
+{
+  "config": {
+    "n_folds": 5,
+    "seed": 42,
+    "gp_generations": 50,
+    "gp_pop_size": 500,
+    "gp_max_nodes": 30,
+    "has_xgboost": false,
+    "has_gplearn": false,
+    "has_elent": true,
+    "gp_version": "v23"
+  },
+  "timestamp": "2026-11-15T10:12:08.018071",
+  "results": [
+    {
+      "dataset": "ESOL",
+      "n_samples": 1128,
+      "n_features": 6,
+      "n_folds": 5,
+      "models": {
+        "Ridge": {
+          "r2_mean": 0.6795502178021506,
+          "r2_std": 0.02912632727372423,
+          "rmse_mean": 1.1811769789907562,
+          "mae_mean": 0.925965797037497,
+          "n_folds_completed": 5,
+          "elapsed_s": 0.1
+        },
+        "RandomForest": {
+          "r2_mean": 0.823017358344344,
+          "r2_std": 0.022431172908037127,
+          "rmse_mean": 0.8770955170901494,
+          "mae_mean": 0.6245659016247617,
+          "n_folds_completed": 5,
+          "elapsed_s": 25.5
+        },
+        "XGBoost(fallback)": {
+          "r2_mean": 0.8348763366766342,
+          "r2_std": 0.02555180511809002,
+          "rmse_mean": 0.8466424221938842,
+          "mae_mean": 0.5993547018693292,
+          "n_folds_completed": 5,
+          "elapsed_s": 6.9
+        },
+        "Elen-t(gp_v23)": {
+          "r2_mean": 0.5523411544779788,
+          "r2_std": 0.038464428444852004,
+          "rmse_mean": 1.3965697143103677,
+          "mae_mean": 1.0987526981424645,
+          "n_folds_completed": 5,
+          "elapsed_s": 39.7
+        }
+      }
+    }
+  ]
+}
