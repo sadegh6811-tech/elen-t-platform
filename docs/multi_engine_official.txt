@@ -1,0 +1,30 @@
+=================================================================
+🧬⚛️🧮 MULTI-ENGINE HYBRID BENCHMARK (100 Complex Drugs)
+=================================================================
+   [10/100] Chem Fails: 10, Best Hybrid R²: 0.804
+   [20/100] Chem Fails: 20, Best Hybrid R²: 0.805
+   [30/100] Chem Fails: 30, Best Hybrid R²: 0.808
+   [40/100] Chem Fails: 40, Best Hybrid R²: 0.794
+   [50/100] Chem Fails: 50, Best Hybrid R²: 0.798
+   [60/100] Chem Fails: 60, Best Hybrid R²: 0.802
+   [70/100] Chem Fails: 70, Best Hybrid R²: 0.804
+   [80/100] Chem Fails: 80, Best Hybrid R²: 0.808
+   [90/100] Chem Fails: 90, Best Hybrid R²: 0.813
+   [100/100] Chem Fails: 100, Best Hybrid R²: 0.815
+
+=================================================================
+🏆 FINAL RESULTS (Multi-Engine Hybrid)
+=================================================================
+⏱️ Total Time: 201.8s (Avg: 2.0s per drug)
+
+🧪 Chemistry Engine Alone:
+   Mean R² (on valid): -0.4523
+
+🧬 Multi-Engine Hybrid:
+   Mean R²: 0.8150
+
+🏅 Engine Win Distribution (Rescues):
+   log: 100/100 (100.0%)
+   pca: 0/100 (0.0%)
+   v31_raw: 0/100 (0.0%)
+=================================================================
