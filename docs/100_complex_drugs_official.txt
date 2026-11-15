@@ -1,0 +1,30 @@
+=================================================================
+🧬 100 COMPLEX DRUGS BENCHMARK (Hybrid Architecture)
+=================================================================
+Simulating 100 drugs with 128 descriptors and nested branches...
+   [10/100] Processed... (Chem fails: 10, Rescues: 10)
+   [20/100] Processed... (Chem fails: 20, Rescues: 20)
+   [30/100] Processed... (Chem fails: 30, Rescues: 30)
+   [40/100] Processed... (Chem fails: 40, Rescues: 40)
+   [50/100] Processed... (Chem fails: 50, Rescues: 50)
+   [60/100] Processed... (Chem fails: 60, Rescues: 60)
+   [70/100] Processed... (Chem fails: 70, Rescues: 70)
+   [80/100] Processed... (Chem fails: 80, Rescues: 80)
+   [90/100] Processed... (Chem fails: 90, Rescues: 90)
+   [100/100] Processed... (Chem fails: 100, Rescues: 100)
+
+=================================================================
+🏆 FINAL RESULTS (100 Complex Drugs)
+=================================================================
+⏱️ Total Time: 50.3s (Avg: 0.5s per drug)
+
+🧪 Chemistry Engine Alone:
+   Mean R² (on valid): -0.3753
+   Total Failures: 100/100
+
+🧬 Hybrid Architecture:
+   Mean R²: 0.8326
+   Successful Rescues: 100/100
+   Total Improvement: +120.79 R² points
+   Average Rescue Boost: +1.2079 R² per rescued drug
+=================================================================
