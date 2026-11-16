@@ -9,7 +9,14 @@ export const dict = {
     cta: "Start Discovery", docs: "Read Docs", stats: [["99.8%", "Peak R²"], ["3", "Engines"], ["<3s", "Avg. Runtime"]],
     dashTitle: "Discovery Console", dashSub: "Upload a dataset, choose a domain, and let the orchestrator do the rest.",
     input: "Input Data", domain: "Domain",
-    domains: { physics: "Physics (Low-Dim)", biology: "Biology (DNA)", drug: "Drug Discovery (High-Dim)" },
+    domains: { 
+      physics_low: "Physics (Low-Dim)", 
+      physics_high: "Physics (High-Dim)",
+      biology: "Biology (DNA)", 
+      drug: "Drug Discovery (High-Dim)",
+      chemistry: "Chemistry (Quantum)",
+      finance: "Finance (Time Series)"
+    },
     placeholder: "Paste JSON or CSV data here...\n\nX0,X1,y\n1.0,2.0,5.5", drop: "Drop a .json or .csv file, or click to browse",
     loaded: "Loaded", run: "Run Engine", loading: "Orchestrator is analyzing data...", results: "Results",
     awaiting: "Awaiting input. Run the engine to reveal discovered laws.",
@@ -25,7 +32,14 @@ export const dict = {
     cta: "شروع کشف", docs: "مستندات", stats: [["۹۹٫۸٪", "بیشترین R²"], ["۳", "موتور"], ["<۳ث", "زمان میانگین"]],
     dashTitle: "کنسول کشف", dashSub: "داده را بارگذاری کنید، حوزه را انتخاب کنید و بقیه را به ارکستراتور بسپارید.",
     input: "داده ورودی", domain: "حوزه",
-    domains: { physics: "فیزیک (کم‌بعد)", biology: "زیست‌شناسی (DNA)", drug: "کشف دارو (پربعد)" },
+    domains: { 
+      physics_low: "فیزیک (کم‌بعد)", 
+      physics_high: "فیزیک (پربعد)",
+      biology: "زیست‌شناسی (DNA)", 
+      drug: "کشف دارو (پربعد)",
+      chemistry: "شیمی (کوانتومی)",
+      finance: "مالی (سری زمانی)"
+    },
     placeholder: "داده JSON یا CSV را اینجا وارد کنید...\n\nX0,X1,y\n1.0,2.0,5.5", drop: "فایل .json یا .csv را رها کنید یا برای انتخاب کلیک کنید",
     loaded: "بارگذاری شد", run: "اجرای موتور", loading: "ارکستراتور در حال تحلیل داده است...", results: "نتایج",
     awaiting: "در انتظار ورودی. موتور را اجرا کنید تا قوانین کشف‌شده نمایش داده شوند.",
