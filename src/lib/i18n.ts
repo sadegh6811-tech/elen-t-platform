@@ -12,7 +12,7 @@ export const dict = {
     domains: { 
       physics_all: "Physics (All Dimensions)",
       biology: "Biology (DNA)", 
-      drug: "Drug Discovery (High-Dim)",
+      drug: "Drug Discovery (All Dimensions)",
       chemistry: "Chemistry (Quantum)",
       finance: "Finance (Time Series)"
     },
@@ -34,7 +34,7 @@ export const dict = {
     domains: { 
       physics_all: "فیزیک (تمام ابعاد)",
       biology: "زیست‌شناسی (DNA)", 
-      drug: "کشف دارو (پربعد)",
+      drug: "کشف دارو (تمام ابعاد)",
       chemistry: "شیمی (کوانتومی)",
       finance: "مالی (سری زمانی)"
     },
