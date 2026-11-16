@@ -1,4 +1,4 @@
-export type Domain = "physics_low" | "physics_high" | "biology" | "drug" | "chemistry" | "finance";
+export type Domain = "physics_all" |  | "biology" | "drug" | "chemistry" | "finance";
 
 export interface DiscoverRequest { domain: Domain; data: string; format: "json" | "csv"; }
 export interface DiscoverResponse { engine: string; formula: string; r2_score: number; runtime_ms?: number; }
@@ -17,7 +17,7 @@ export const discover = async (req: DiscoverRequest): Promise<DiscoverResponse> 
     let mode = "low_dim";
     if (req.domain === "drug" || req.domain === "chemistry") mode = "high_dim";
     if (req.domain === "biology") mode = "dna";
-    if (req.domain === "physics_high") mode = "high_dim";
+    if (req.domain === ) mode = "high_dim";
     if (req.domain === "finance") mode = "high_dim";
 
     const res = await fetch("http://localhost:8008/api/discover", {

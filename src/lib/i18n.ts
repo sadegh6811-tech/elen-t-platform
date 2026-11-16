@@ -10,8 +10,7 @@ export const dict = {
     dashTitle: "Discovery Console", dashSub: "Upload a dataset, choose a domain, and let the orchestrator do the rest.",
     input: "Input Data", domain: "Domain",
     domains: { 
-      physics_low: "Physics (Low-Dim)", 
-      physics_high: "Physics (High-Dim)",
+      physics_all: "Physics (All Dimensions)",
       biology: "Biology (DNA)", 
       drug: "Drug Discovery (High-Dim)",
       chemistry: "Chemistry (Quantum)",
@@ -33,8 +32,7 @@ export const dict = {
     dashTitle: "کنسول کشف", dashSub: "داده را بارگذاری کنید، حوزه را انتخاب کنید و بقیه را به ارکستراتور بسپارید.",
     input: "داده ورودی", domain: "حوزه",
     domains: { 
-      physics_low: "فیزیک (کم‌بعد)", 
-      physics_high: "فیزیک (پربعد)",
+      physics_all: "فیزیک (تمام ابعاد)",
       biology: "زیست‌شناسی (DNA)", 
       drug: "کشف دارو (پربعد)",
       chemistry: "شیمی (کوانتومی)",

@@ -7,9 +7,8 @@ import {
   BookOpen, Code2, FileText, ChevronDown, Sparkles, ArrowRight,
 } from "lucide-react";
 
-// ایمپورت‌های اختصاصی پروژه
 import DNAScene from "../components/DNAScene";
-import DeployButton from "../components/DeployButton"; // دکمه دیپلوی اضافه شد
+import DeployButton from "../components/DeployButton";
 import { dict, type Lang, type Dict } from "@/lib/i18n";
 import { checkHealth, discover, type Domain, type DiscoverResponse } from "@/lib/api";
 
@@ -34,9 +33,7 @@ function Navbar({ t, lang, setLang, online }: { t: Dict; lang: Lang; setLang: (l
             </span>
           </a>
           <div className="flex items-center gap-3">
-            {/* دکمه دیپلوی اینجا قرار گرفت */}
             <DeployButton />
-            
             <div className="hidden sm:flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1.5 text-xs">
               <span className="relative flex h-2.5 w-2.5">
                 <span className={`absolute inline-flex h-full w-full rounded-full ${online ? "bg-emerald-400" : "bg-amber-400"} opacity-75 animate-ping`} />
@@ -47,7 +44,6 @@ function Navbar({ t, lang, setLang, online }: { t: Dict; lang: Lang; setLang: (l
             <button
               onClick={() => setLang(lang === "en" ? "fa" : "en")}
               className="flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-3 py-1.5 text-xs font-semibold hover:bg-cyan-400/15 transition"
-              aria-label="Toggle language"
             >
               <Globe className="h-4 w-4 text-cyan-300" />
               <span dir="ltr" className="font-sans">
@@ -135,7 +131,7 @@ function R2Ring({ value }: { value: number }) {
 }
 
 function Console({ t }: { t: Dict }) {
-  const [domain, setDomain] = useState<Domain>("physics_low");
+  const [domain, setDomain] = useState<Domain>("physics_all");
   const [data, setData] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -170,7 +166,6 @@ function Console({ t }: { t: Dict }) {
           <p className="mt-3 text-slate-400">{t.dashSub}</p>
         </motion.div>
         <div className="grid lg:grid-cols-2 gap-6">
-          {/* Input */}
           <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="glass rounded-3xl p-6 flex flex-col gap-5">
             <div className="flex items-center justify-between">
               <h3 className="flex items-center gap-2 font-semibold text-white"><Upload className="h-5 w-5 text-cyan-300" />{t.input}</h3>
@@ -201,11 +196,9 @@ function Console({ t }: { t: Dict }) {
             <button onClick={run} disabled={loading}
               className="relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3.5 font-bold text-slate-950 shadow-[0_0_25px_rgba(34,211,238,0.45)] hover:shadow-[0_0_40px_rgba(34,211,238,0.7)] disabled:opacity-80 transition flex items-center justify-center gap-2">
               {loading ? <><Loader2 className="h-5 w-5 animate-spin" />{t.loading}</> : <><Play className="h-5 w-5 rtl:rotate-180" />{t.run}</>}
-              {loading && <motion.span className="absolute inset-y-0 w-1/3 bg-white/30 blur-md" initial={{ left: "-33%" }} animate={{ left: "100%" }} transition={{ repeat: Infinity, duration: 1.2 }} />}
             </button>
           </motion.div>
 
-          {/* Results */}
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="glass rounded-3xl p-6 flex flex-col">
             <h3 className="flex items-center gap-2 font-semibold text-white mb-5"><Activity className="h-5 w-5 text-emerald-300" />{t.results}</h3>
             <AnimatePresence mode="wait">
@@ -215,7 +208,6 @@ function Console({ t }: { t: Dict }) {
                     <div className="relative mx-auto h-24 w-24">
                       <div className="absolute inset-0 rounded-full border-2 border-cyan-400/20" />
                       <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-cyan-400 animate-spin" />
-                      <div className="absolute inset-3 rounded-full border-2 border-transparent border-b-emerald-400 animate-spin [animation-direction:reverse]" />
                       <Cpu className="absolute inset-0 m-auto h-8 w-8 text-cyan-300 animate-pulse" />
                     </div>
                     <p className="mt-5 text-cyan-200">{t.loading}</p>
@@ -227,7 +219,6 @@ function Console({ t }: { t: Dict }) {
                     <div className="rounded-2xl bg-slate-900/50 border border-cyan-400/10 p-5">
                       <div className="text-xs uppercase tracking-wider text-slate-500">{t.engine}</div>
                       <div className="mt-2 flex items-center gap-2 text-xl font-bold text-cyan-300 font-mono" dir="ltr"><Cpu className="h-5 w-5" />{result.engine}</div>
-                      {result.runtime_ms && <div className="mt-4 text-xs text-slate-500">{t.runtime}: <span className="text-slate-300 font-mono">{result.runtime_ms} ms</span></div>}
                     </div>
                     <div className="rounded-2xl bg-slate-900/50 border border-emerald-400/10 p-5 flex flex-col items-center">
                       <div className="text-xs uppercase tracking-wider text-slate-500 self-start">{t.r2}</div>
@@ -241,8 +232,8 @@ function Console({ t }: { t: Dict }) {
                         {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}{copied ? t.copied : t.copy}
                       </button>
                     </div>
-                    <pre dir="ltr" className="rounded-xl bg-slate-950/80 border border-emerald-400/30 p-5 font-mono text-base sm:text-lg text-emerald-300 overflow-x-auto shadow-[0_0_30px_rgba(74,222,128,0.2)_inset,0_0_20px_rgba(74,222,128,0.15)] text-left">
-                      <code className="[text-shadow:0_0_12px_rgba(74,222,128,0.8)]">{result.formula}</code>
+                    <pre dir="ltr" className="rounded-xl bg-slate-950/80 border border-emerald-400/30 p-5 font-mono text-base sm:text-lg text-emerald-300 overflow-x-auto">
+                      <code>{result.formula}</code>
                     </pre>
                   </div>
                 </motion.div>
