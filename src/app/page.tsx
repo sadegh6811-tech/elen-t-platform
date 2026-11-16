@@ -10,8 +10,8 @@ import {
 // ایمپورت‌های اختصاصی پروژه
 import DNAScene from "../components/DNAScene";
 import DeployButton from "../components/DeployButton"; // دکمه دیپلوی اضافه شد
-import { dict, type Lang, type Dict } from "../lib/i18n";
-import { checkHealth, discover, type Domain, type DiscoverResponse } from "../lib/api";
+import { dict, type Lang, type Dict } from "@/lib/i18n";
+import { checkHealth, discover, type Domain, type DiscoverResponse } from "@/lib/api";
 
 const SAMPLE = `X0,X1,y
 1.0,2.0,5.5
