@@ -135,7 +135,7 @@ function R2Ring({ value }: { value: number }) {
 }
 
 function Console({ t }: { t: Dict }) {
-  const [domain, setDomain] = useState<Domain>("physics");
+  const [domain, setDomain] = useState<Domain>("physics_low");
   const [data, setData] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
