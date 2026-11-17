@@ -53,3 +53,6 @@ upload_helix_to_vercel.js
 upload_tetra.js
 upload_to_vercel.js
 dna_helix.pdb
+*.backup-*
+*.backup
+src/db/index.ts.backup-*
