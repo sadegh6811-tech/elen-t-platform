@@ -1,19 +1,24 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import * as schema from "./schema";
 
-const databaseUrl = process.env.DATABASE_URL;
-if (!databaseUrl) throw new Error("DATABASE_URL is required");
-
-const globalForDb = globalThis as typeof globalThis & {
-  __arenaNextJsPostgresqlPool?: Pool;
-};
-
-export const pool =
-  globalForDb.__arenaNextJsPostgresqlPool ??
-  new Pool({ connectionString: databaseUrl });
-
-if (process.env.NODE_ENV !== "production") {
-  globalForDb.__arenaNextJsPostgresqlPool = pool;
+if (!process.env.DATABASE_URL) {
+  throw new Error("❌ DATABASE_URL is not set. Check your .env.local file.");
 }
 
-export const db = drizzle(pool);
+export const sql = neon(process.env.DATABASE_URL);
+export const db = drizzle(sql, { schema });
+
+// شبیه‌ساز pool برای فایل‌هایی که هنوز از روش قدیمی استفاده می‌کنند
+export const pool = {
+  query: async (text: string, params: any[] = []) => {
+    try {
+      // استفاده از sql.unsafe برای اجرای کوئری‌های خام در neon-http
+      const rows = await (sql as any).unsafe(text, params);
+      return { rows };
+    } catch (e) {
+      console.error("Database query error:", e);
+      throw e;
+    }
+  }
+};
