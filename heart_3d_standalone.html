@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3D Mathematical Heart - ELEN</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #030308; }
+        #info {
+            position: absolute; top: 20px; width: 100%; text-align: center;
+            color: #ff1e56; font-family: monospace; font-size: 14px;
+            pointer-events: none; letter-spacing: 2px; text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255,30,86,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div id="info">❤️ 3D Mathematical Heart (Rotate to explore)</div>
+    
+    <!-- استفاده از Three.js از CDN -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // ۱. تنظیمات اولیه صحنه
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 8);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // ۲. کنترلر چرخش (ماوس یا لمس)
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 1.5;
+
+        // ۳. نورپردازی
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xff1e56, 50, 20);
+        pointLight.position.set(0, 5, 5);
+        scene.add(pointLight);
+
+        const pointLight2 = new THREE.PointLight(0x00ffff, 30, 20);
+        pointLight2.position.set(0, -5, -5);
+        scene.add(pointLight2);
+
+        // ۴. ساخت هندسه قلب
+        const k = 35.21;
+        const limit = Math.sqrt(3);
+        const widthSegments = 150;
+        const depthSegments = 60;
+        
+        const geometry = new THREE.BufferGeometry();
+        const vertices = [];
+        const indices = [];
+        const colors = [];
+
+        const colorTop = new THREE.Color(0xff1e56);
+        const colorBottom = new THREE.Color(0x8a2be2);
+
+        for (let i = 0; i <= widthSegments; i++) {
+            const x = -limit + (2 * limit * i) / widthSegments;
+            const xAbs = Math.abs(x);
+            
+            // فرمول اصلی y (بدون موج)
+            const yBase = -Math.pow(xAbs, 2/3) + 0.9 * Math.sin(k * x) * Math.sqrt(3 - x*x);
+
+            for (let j = 0; j <= depthSegments; j++) {
+                const z = -1.5 + (3 * j) / depthSegments;
+                
+                // ایجاد ضخامت (شبیه بادکنک)
+                const thickness = Math.cos((z / 1.5) * Math.PI / 2);
+                
+                // محاسبه y نهایی
+                const y = (yBase * thickness) + 2.0; // +2 برای اینکه روی مرکز قرار بگیرد
+
+                vertices.push(x, y, z);
+                
+                // رنگ‌آمیزی بر اساس ارتفاع
+                const mixFactor = (y - 0.5) / 3.5;
+                const c = colorBottom.clone().lerp(colorTop, mixFactor);
+                colors.push(c.r, c.g, c.b);
+            }
+        }
+
+        // ساخت مثلث‌ها (Faces)
+        for (let i = 0; i < widthSegments; i++) {
+            for (let j = 0; j < depthSegments; j++) {
+                const a = i * (depthSegments + 1) + j;
+                const b = i * (depthSegments + 1) + j + 1;
+                const c = (i + 1) * (depthSegments + 1) + j;
+                const d = (i + 1) * (depthSegments + 1) + j + 1;
+
+                indices.push(a, b, d);
+                indices.push(a, d, c);
+            }
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        geometry.setIndex(indices);
+        geometry.computeVertexNormals();
+
+        // ۵. متریال و اضافه کردن به صحنه
+        const material = new THREE.MeshPhysicalMaterial({
+            vertexColors: true,
+            roughness: 0.2,
+            metalness: 0.1,
+            clearcoat: 1.0,
+            clearcoatRoughness: 0.1,
+            side: THREE.DoubleSide,
+            wireframe: false
+        });
+
+        const heartMesh = new THREE.Mesh(geometry, material);
+        scene.add(heartMesh);
+
+        // اضافه کردن خطوط مش (Wireframe) برای زیبایی بیشتر
+        const wireframeMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x00ffff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.08 
+        });
+        const wireframeMesh = new THREE.Mesh(geometry, wireframeMaterial);
+        scene.add(wireframeMesh);
+
+        // ۶. حلقه انیمیشن
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // مدیریت تغییر سایز صفحه
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

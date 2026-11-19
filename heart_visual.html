@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mathematical Heart</title>
+    <style>
+        body { background: #030308; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        canvas { background: #0a0714; border-radius: 12px; box-shadow: 0 0 40px rgba(138,43,226,0.3); }
+    </style>
+</head>
+<body>
+    <canvas id="heartCanvas" width="500" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // فرمول
+        const k = 35.21;
+        const scale = 120; // برای بزرگنمایی
+        const offsetX = width / 2;
+        const offsetY = height / 2;
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#FF1E56';
+        ctx.lineWidth = 2;
+
+        const sqrt3 = Math.sqrt(3);
+        const steps = 1000;
+
+        for (let i = 0; i <= steps; i++) {
+            const x = -sqrt3 + (2 * sqrt3 * i) / steps;
+            const xAbs = Math.abs(x);
+            
+            // y = - (|x|^(2/3)) + 0.9 * sin(kx) * sqrt(3 - x^2)
+            const term1 = -Math.pow(xAbs, 2/3);
+            const term2 = 0.9 * Math.sin(k * x) * Math.sqrt(3 - x*x);
+            const y = term1 + term2;
+
+            // تبدیل به مختصات صفحه
+            const px = offsetX + x * scale;
+            const py = offsetY - y * scale; // منفی چون در کامپیوتر y به سمت پایین است
+
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+    </script>
+</body>
+</html>
