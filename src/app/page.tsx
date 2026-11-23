@@ -1,305 +1,257 @@
-'use client';
+"use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, animate } from "framer-motion";
+import dynamic from "next/dynamic";
+import Logo from "@/components/Logo";
+import type { AvatarState } from "@/components/Avatar3D";
 import {
-  Globe, Activity, Dna, Upload, Play, Loader2, Cpu, Sigma, Copy, Check,
-  BookOpen, Code2, FileText, ChevronDown, Sparkles, ArrowRight,
+  Brain, ChevronDown, Cpu, Database, History, Lock, Menu,
+  MessagesSquare, Paperclip, Plus, Send, Server, Sparkles, Zap, Copy, Check,
 } from "lucide-react";
 
-import DNAScene from "../components/DNAScene";
-import DeployButton from "../components/DeployButton";
-import { dict, type Lang, type Dict } from "@/lib/i18n";
-import { checkHealth, discover, type Domain, type DiscoverResponse } from "@/lib/api";
-
-const SAMPLE = `X0,X1,y
-1.0,2.0,5.5
-2.0,1.0,4.5
-3.0,0.5,5.75
-0.5,3.0,7.625
-4.0,2.0,13.0`;
-
-function Navbar({ t, lang, setLang, online }: { t: Dict; lang: Lang; setLang: (l: Lang) => void; online: boolean }) {
-  return (
-    <header className="fixed top-0 inset-x-0 z-50">
-      <div className="mx-auto max-w-7xl px-4 mt-4">
-        <nav className="glass rounded-2xl px-5 py-3 flex items-center justify-between">
-          <a href="#" className="flex items-center gap-3">
-            <div className="relative h-9 w-9 rounded-xl bg-gradient-to-br from-cyan-400 to-emerald-400 grid place-items-center shadow-[0_0_20px_rgba(34,211,238,0.6)]">
-              <Dna className="h-5 w-5 text-slate-950" />
-            </div>
-            <span className="font-bold tracking-tight text-white" dir="ltr">
-              Elen-k <span className="text-cyan-300">Health OS</span>
-            </span>
-          </a>
-          <div className="flex items-center gap-3">
-            <DeployButton />
-            <div className="hidden sm:flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/5 px-3 py-1.5 text-xs">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className={`absolute inline-flex h-full w-full rounded-full ${online ? "bg-emerald-400" : "bg-amber-400"} opacity-75 animate-ping`} />
-                <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${online ? "bg-emerald-400" : "bg-amber-400"}`} />
-              </span>
-              <span className={online ? "text-emerald-300" : "text-amber-300"}>{online ? t.online : t.offline}</span>
-            </div>
-            <button
-              onClick={() => setLang(lang === "en" ? "fa" : "en")}
-              className="flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-3 py-1.5 text-xs font-semibold hover:bg-cyan-400/15 transition"
-            >
-              <Globe className="h-4 w-4 text-cyan-300" />
-              <span dir="ltr" className="font-sans">
-                <span className={lang === "en" ? "text-cyan-300" : "text-slate-500"}>EN</span>
-                <span className="mx-1 text-slate-600">|</span>
-                <span className={lang === "fa" ? "text-cyan-300" : "text-slate-500"}>FA</span>
-              </span>
-            </button>
-          </div>
-        </nav>
-      </div>
-    </header>
-  );
-}
-
-function Hero({ t }: { t: Dict }) {
-  return (
-    <section className="relative min-h-screen flex items-center pt-28 overflow-hidden">
-      <div className="absolute inset-0 grid-bg" />
-      <div className="absolute -top-40 start-1/4 h-[500px] w-[500px] rounded-full bg-cyan-500/20 blur-[120px]" />
-      <div className="absolute bottom-0 end-0 h-[400px] w-[400px] rounded-full bg-emerald-500/15 blur-[120px]" />
-      <div className="relative mx-auto max-w-7xl px-4 grid lg:grid-cols-2 gap-10 items-center w-full">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/5 px-3 py-1 text-xs text-cyan-200 mb-6">
-            <Sparkles className="h-3.5 w-3.5" /> {t.badge}
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
-            {t.title1}{" "}
-            <span className="bg-gradient-to-r from-cyan-300 via-teal-300 to-emerald-400 bg-clip-text text-transparent">{t.title2}</span>
-          </h1>
-          <p className="mt-5 text-lg text-teal-200 text-glow font-medium">{t.subtitle}</p>
-          <p className="mt-4 max-w-xl text-slate-400 leading-relaxed">{t.desc}</p>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <a href="#console" className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 px-7 py-3.5 font-bold text-slate-950 shadow-[0_0_30px_rgba(45,212,191,0.6)] hover:shadow-[0_0_50px_rgba(45,212,191,0.9)] transition">
-              {t.cta}
-              <ArrowRight className="h-5 w-5 transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
-            </a>
-            <a href="#" className="inline-flex items-center gap-2 rounded-xl border border-slate-700 px-6 py-3.5 font-semibold text-slate-200 hover:border-cyan-400/50 transition">
-              <BookOpen className="h-5 w-5" /> {t.docs}
-            </a>
-          </div>
-          <div className="mt-12 grid grid-cols-3 gap-4 max-w-md">
-            {t.stats.map(([v, l]) => (
-              <div key={l} className="border-s-2 border-cyan-400/40 ps-3">
-                <div className="text-2xl font-bold text-white">{v}</div>
-                <div className="text-xs text-slate-500">{l}</div>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.2 }} className="relative h-[460px] lg:h-[620px]">
-          <div className="absolute inset-10 rounded-full border border-cyan-400/10" />
-          <div className="absolute inset-24 rounded-full border border-emerald-400/10" />
-          <DNAScene />
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function R2Ring({ value }: { value: number }) {
-  const [display, setDisplay] = useState(0);
-  useEffect(() => {
-    const c = animate(0, value, { duration: 1.6, ease: "easeOut", onUpdate: setDisplay });
-    return () => c.stop();
-  }, [value]);
-  const r = 54, C = 2 * Math.PI * r;
-  return (
-    <div className="relative h-36 w-36">
-      <svg viewBox="0 0 128 128" className="h-full w-full -rotate-90">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1">
-            <stop offset="0%" stopColor="#22d3ee" /><stop offset="100%" stopColor="#4ade80" />
-          </linearGradient>
-        </defs>
-        <circle cx="64" cy="64" r={r} stroke="rgba(56,189,248,0.1)" strokeWidth="10" fill="none" />
-        <circle cx="64" cy="64" r={r} stroke="url(#g)" strokeWidth="10" fill="none" strokeLinecap="round"
-          strokeDasharray={C} strokeDashoffset={C * (1 - display)} style={{ filter: "drop-shadow(0 0 8px rgba(45,212,191,0.8))" }} />
-      </svg>
-      <div className="absolute inset-0 grid place-items-center" dir="ltr">
-        <span className="text-2xl font-bold text-white font-mono">{display.toFixed(4)}</span>
-      </div>
+const Avatar3D = dynamic(() => import("@/components/Avatar3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="h-24 w-24 animate-pulse rounded-full bg-mint-500/20 blur-sm" />
     </div>
-  );
+  ),
+});
+
+type ChatItem = { id: string; title: string; time: string; group: string; messages: number; };
+const HISTORY: ChatItem[] = [
+  { id: "1", title: "راهنمای اجرای vLLM", time: "۱۲:۴۳", group: "امروز", messages: 8 },
+  { id: "2", title: "تنظیم nginx جلوی API", time: "۱۰:۵۷", group: "امروز", messages: 6 },
+  { id: "3", title: "طراحی Custom Engine", time: "۱۷:۲۱", group: "دیروز", messages: 14 },
+];
+const GROUPS = ["امروز", "دیروز"];
+
+type QuickPrompt = { label: string; message: string };
+const QUICK_PROMPTS: QuickPrompt[] = [
+  { label: "آیا داده‌ها بیرون از شبکه می‌روند؟", message: "آیا داده‌ها بیرون از شبکهٔ محلی می‌روند؟" },
+  { label: "یک فرمول فیزیک به من بده", message: "یک فرمول فیزیک به من بده" },
+  { label: "پروتکل پیش‌بینی را توضیح بده", message: "پروتکل پیش‌بینی Custom Engine چطور کار می‌کند؟" },
+];
+
+type ChatMessage = { id: string; role: "user" | "assistant"; content: string; time: string };
+
+function nowTime() {
+  return new Intl.DateTimeFormat("fa-IR", { hour: "2-digit", minute: "2-digit" }).format(new Date());
 }
 
-function Console({ t }: { t: Dict }) {
-  const [domain, setDomain] = useState<Domain>("physics_all");
-  const [data, setData] = useState("");
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<DiscoverResponse | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [drag, setDrag] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
+export default function HomePage() {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [activeChat, setActiveChat] = useState("1");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [pending, setPending] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
 
-  const readFile = (f: File) => {
-    setFileName(f.name);
-    f.text().then(setData);
-  };
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, pending]);
 
-  const run = async () => {
-    setLoading(true); setResult(null);
-    const trimmed = data.trim();
-    const res = await discover({ domain, data: trimmed, format: trimmed.startsWith("{") || trimmed.startsWith("[") ? "json" : "csv" });
-    setResult(res); setLoading(false);
-  };
+  // اتصال واقعی به بک‌اند (API)
+  async function send(text: string) {
+    const content = text.trim();
+    if (!content || pending) return;
 
-  const copy = () => {
-    if (!result) return;
-    navigator.clipboard?.writeText(result.formula);
-    setCopied(true); setTimeout(() => setCopied(false), 1500);
-  };
+    const newMessages = [...messages, { id: crypto.randomUUID(), role: "user", content, time: nowTime() } as ChatMessage];
+    setMessages(newMessages);
+    setInput("");
+    setPending(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })) 
+        }),
+      });
+
+      if (!res.ok) throw new Error("خطا در دریافت پاسخ");
+
+      const data = await res.json();
+      
+      setMessages((prev) => [
+        ...prev,
+        { id: crypto.randomUUID(), role: "assistant", content: data.message.content, time: nowTime() },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        { id: crypto.randomUUID(), role: "assistant", content: "متأسفم، در حال حاضر ارتباط با سرور برقرار نیست.", time: nowTime() },
+      ]);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  function newChat() {
+    setMessages([]);
+    setInput("");
+    setPending(false);
+    setSidebarOpen(false);
+    setActiveChat("new");
+  }
+
+  const hasMessages = messages.length > 0;
+  const avatarState: AvatarState = pending ? "thinking" : hasMessages ? "responding" : "idle";
 
   return (
-    <section id="console" className="relative py-24">
-      <div className="mx-auto max-w-7xl px-4">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white">{t.dashTitle}</h2>
-          <p className="mt-3 text-slate-400">{t.dashSub}</p>
-        </motion.div>
-        <div className="grid lg:grid-cols-2 gap-6">
-          <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="glass rounded-3xl p-6 flex flex-col gap-5">
-            <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-2 font-semibold text-white"><Upload className="h-5 w-5 text-cyan-300" />{t.input}</h3>
-              <button onClick={() => { setData(SAMPLE); setFileName(null); }} className="text-xs text-cyan-300 hover:text-cyan-200">{t.sample}</button>
+    <div className="flex h-dvh overflow-hidden">
+      <aside
+        className={`fixed inset-y-0 right-0 z-40 flex w-[300px] flex-col border-e border-white/8 bg-night-900/95 px-5 py-6 backdrop-blur-xl transition-transform duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0 shadow-card" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center gap-3">
+          <Logo size={44} className="shrink-0 drop-shadow-[0_0_14px_rgba(0,229,255,0.45)]" />
+          <div>
+            <p className="text-lg font-extrabold leading-tight text-slate-100">هستی</p>
+            <p className="text-[11px] text-slate-500">دستیار هوش‌مصنوعی خصوصی</p>
+          </div>
+        </div>
+
+        <button onClick={newChat} className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-mint-400 px-4 py-2.5 text-sm font-bold text-night-950 hover:bg-mint-300 active:scale-[0.98]">
+          <Plus size={18} strokeWidth={2.6} /> گفتگوی جدید
+        </button>
+
+        <div className="mt-6 mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+          <History size={13} /> تاریخچه
+        </div>
+
+        <nav className="scroll-area flex-1 space-y-5 overflow-y-auto pe-1">
+          {GROUPS.map((group) => {
+            const items = HISTORY.filter((c) => c.group === group);
+            if (items.length === 0) return null;
+            return (
+              <div key={group}>
+                <p className="mb-2 text-[11px] font-medium text-slate-500">{group}</p>
+                <ul className="space-y-1">
+                  {items.map((item) => {
+                    const isActive = activeChat === item.id;
+                    return (
+                      <li key={item.id}>
+                        <button onClick={() => setActiveChat(item.id)} className={`group flex w-full items-start gap-3 rounded-xl border-s-2 px-3 py-2.5 text-right transition ${isActive ? "border-mint-400/80 bg-mint-500/10 text-slate-100" : "border-transparent text-slate-400 hover:bg-white/5 hover:text-slate-200"}`}>
+                          <MessagesSquare size={16} className={`mt-0.5 shrink-0 transition ${isActive ? "text-mint-300" : "text-slate-600 group-hover:text-slate-400"}`} />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-medium">{item.title}</span>
+                          </span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            );
+          })}
+        </nav>
+
+        <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-3.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-slate-300">
+              <Brain size={16} className="text-mint-300" /><span className="text-xs font-semibold">مدل فعلی</span>
             </div>
-            <div>
-              <label className="text-xs uppercase tracking-wider text-slate-500">{t.domain}</label>
-              <div className="relative mt-2">
-                <select value={domain} onChange={(e) => setDomain(e.target.value as Domain)}
-                  className="w-full appearance-none rounded-xl bg-slate-900/60 border border-cyan-400/20 px-4 py-3 pe-10 text-slate-100 focus:outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20">
-                  {(Object.keys(t.domains) as Domain[]).map((k) => <option key={k} value={k}>{t.domains[k]}</option>)}
-                </select>
-                <ChevronDown className="pointer-events-none absolute end-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <span className="inline-flex items-center gap-1 rounded-full bg-mint-500/15 px-2 py-0.5 text-[10px] font-bold text-mint-300">
+              <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-75" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400" /></span>
+              آماده
+            </span>
+          </div>
+          <p dir="ltr" className="mt-2 truncate text-[12px] font-medium text-slate-200">Qwen3-Coder-30B-A3B-AWQ</p>
+        </div>
+      </aside>
+
+      {sidebarOpen && <button className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => setSidebarOpen(false)} />}
+
+      <main className="flex min-w-0 flex-1 flex-col">
+        <header className="flex items-center justify-between gap-3 border-b border-white/8 bg-night-900/60 px-4 py-3 backdrop-blur-xl sm:px-6">
+          <div className="flex items-center gap-3">
+            <button onClick={() => setSidebarOpen((v) => !v)} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition hover:bg-white/10 lg:hidden">
+              <Menu size={19} />
+            </button>
+            <button className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm transition hover:bg-white/10">
+              <Brain size={17} className="shrink-0 text-glow-400" />
+              <span className="hidden text-[13px] font-medium text-slate-200 sm:block" dir="ltr">Qwen3-Coder-30B-A3B-AWQ</span>
+              <ChevronDown size={15} className="shrink-0 text-slate-500" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button onClick={() => { navigator.clipboard.writeText(window.location.href); alert("لینک کپی شد!"); }} className="flex items-center justify-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-[11px] font-semibold text-slate-300 transition hover:bg-white/10 hover:text-white" dir="rtl">
+              <Copy size={14} /><span className="hidden sm:inline">کپی لینک</span>
+            </button>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-[11px] font-semibold text-slate-300" dir="ltr">
+              <span className="relative flex h-1.5 w-1.5"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint-400 opacity-75" /><span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-mint-400" /></span>
+              <Server size={13} /> vllm · 8000
+            </span>
+            <div className="ms-2 grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-mint-400 to-glow-500 shadow-glow ring-2 ring-white/10">
+              <Zap size={17} className="text-night-950" strokeWidth={2.6} />
+            </div>
+          </div>
+        </header>
+
+        <div className="scroll-area relative flex-1 overflow-y-auto">
+          {!hasMessages ? (
+            <div className="flex min-h-full flex-col items-center justify-center px-6 py-10 text-center">
+              <div className="relative h-[38vh] min-h-[280px] w-full max-w-xl animate-fade-up">
+                <div className="absolute inset-x-10 bottom-0 h-24 rounded-[100%] bg-mint-500/10 blur-3xl" />
+                <div className="absolute inset-y-0 inset-x-2 rounded-[2.5rem] bg-gradient-to-b from-white/[0.05] to-transparent" />
+                <Avatar3D state={avatarState} />
+              </div>
+              <h1 className="mt-2 text-4xl font-extrabold tracking-tight sm:text-5xl"><span className="text-gradient">هستی</span></h1>
+              <p className="mt-3 max-w-md text-sm leading-7 text-slate-400">یک دستیار هوش‌مصنوعی خصوصی که کاملاً روی سرور شما اجرا می‌شود.</p>
+              <div className="mt-6 flex max-w-xl flex-wrap justify-center gap-2">
+                {QUICK_PROMPTS.map((chip) => (
+                  <button key={chip.label} onClick={() => send(chip.message)} className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[13px] text-slate-300 transition hover:border-mint-400/40 hover:bg-mint-500/10 hover:text-mint-300 active:scale-[0.97]">{chip.label}</button>
+                ))}
               </div>
             </div>
-            <textarea value={data} onChange={(e) => setData(e.target.value)} placeholder={t.placeholder} rows={8} dir="ltr"
-              className="w-full resize-none rounded-xl bg-slate-950/60 border border-cyan-400/20 p-4 font-mono text-sm text-emerald-200 placeholder:text-slate-600 focus:outline-none focus:border-cyan-400/60 focus:ring-2 focus:ring-cyan-400/20" />
-            <div
-              onClick={() => fileRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
-              onDragLeave={() => setDrag(false)}
-              onDrop={(e) => { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files[0]; if (f) readFile(f); }}
-              className={`cursor-pointer rounded-xl border-2 border-dashed p-5 text-center text-sm transition ${drag ? "border-emerald-400 bg-emerald-400/10" : "border-cyan-400/20 hover:border-cyan-400/50"}`}>
-              <FileText className="mx-auto mb-2 h-6 w-6 text-cyan-300" />
-              <span className="text-slate-400">{fileName ? `${t.loaded}: ${fileName}` : t.drop}</span>
-              <input ref={fileRef} type="file" accept=".json,.csv" hidden onChange={(e) => e.target.files?.[0] && readFile(e.target.files[0])} />
-            </div>
-            <button onClick={run} disabled={loading}
-              className="relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 py-3.5 font-bold text-slate-950 shadow-[0_0_25px_rgba(34,211,238,0.45)] hover:shadow-[0_0_40px_rgba(34,211,238,0.7)] disabled:opacity-80 transition flex items-center justify-center gap-2">
-              {loading ? <><Loader2 className="h-5 w-5 animate-spin" />{t.loading}</> : <><Play className="h-5 w-5 rtl:rotate-180" />{t.run}</>}
-            </button>
-          </motion.div>
-
-          <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="glass rounded-3xl p-6 flex flex-col">
-            <h3 className="flex items-center gap-2 font-semibold text-white mb-5"><Activity className="h-5 w-5 text-emerald-300" />{t.results}</h3>
-            <AnimatePresence mode="wait">
-              {loading ? (
-                <motion.div key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 grid place-items-center">
-                  <div className="text-center">
-                    <div className="relative mx-auto h-24 w-24">
-                      <div className="absolute inset-0 rounded-full border-2 border-cyan-400/20" />
-                      <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-cyan-400 animate-spin" />
-                      <Cpu className="absolute inset-0 m-auto h-8 w-8 text-cyan-300 animate-pulse" />
+          ) : (
+            <div className="mx-auto flex min-h-full w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6">
+              {messages.map((m) => (
+                <div key={m.id} className={`flex animate-fade-up ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                  {m.role === "user" ? (
+                    <div className="flex max-w-[85%] flex-col gap-1.5 items-end">
+                      <div className="rounded-2xl rounded-br-md bg-gradient-to-l from-mint-500 to-teal-500 px-4 py-3 text-[14px] font-medium leading-7 text-night-950 whitespace-pre-wrap">{m.content}</div>
                     </div>
-                    <p className="mt-5 text-cyan-200">{t.loading}</p>
-                  </div>
-                </motion.div>
-              ) : result ? (
-                <motion.div key="r" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex flex-col gap-5">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="rounded-2xl bg-slate-900/50 border border-cyan-400/10 p-5">
-                      <div className="text-xs uppercase tracking-wider text-slate-500">{t.engine}</div>
-                      <div className="mt-2 flex items-center gap-2 text-xl font-bold text-cyan-300 font-mono" dir="ltr"><Cpu className="h-5 w-5" />{result.engine}</div>
+                  ) : (
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-mint-400 to-glow-500 shadow-glow"><Sparkles size={17} className="text-night-950" strokeWidth={2.4} /></div>
+                      <div className="flex max-w-[85%] flex-col gap-1.5 items-start">
+                        <div className="rounded-2xl rounded-br-md border border-white/10 bg-white/[0.05] px-4 py-3 text-[14px] leading-7 text-slate-200 backdrop-blur whitespace-pre-wrap">{m.content}</div>
+                      </div>
                     </div>
-                    <div className="rounded-2xl bg-slate-900/50 border border-emerald-400/10 p-5 flex flex-col items-center">
-                      <div className="text-xs uppercase tracking-wider text-slate-500 self-start">{t.r2}</div>
-                      <R2Ring value={result.r2_score} />
+                  )}
+                </div>
+              ))}
+              {pending && (
+                <div className="flex animate-fade-up justify-start">
+                  <div className="flex items-start gap-2.5">
+                    <div className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-mint-400 to-glow-500 shadow-glow"><Sparkles size={17} className="text-night-950" strokeWidth={2.4} /></div>
+                    <div className="flex items-center gap-1.5 rounded-2xl rounded-br-md border border-white/10 bg-white/[0.05] px-4 py-3.5 backdrop-blur">
+                      <span className="typing-dot h-2 w-2 rounded-full bg-mint-300" /><span className="typing-dot h-2 w-2 rounded-full bg-mint-300" /><span className="typing-dot h-2 w-2 rounded-full bg-mint-300" />
                     </div>
                   </div>
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="flex items-center gap-2 text-xs uppercase tracking-wider text-slate-500"><Sigma className="h-4 w-4" />{t.formula}</span>
-                      <button onClick={copy} className="flex items-center gap-1 text-xs text-cyan-300 hover:text-cyan-200">
-                        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}{copied ? t.copied : t.copy}
-                      </button>
-                    </div>
-                    <pre dir="ltr" className="rounded-xl bg-slate-950/80 border border-emerald-400/30 p-5 font-mono text-base sm:text-lg text-emerald-300 overflow-x-auto">
-                      <code>{result.formula}</code>
-                    </pre>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div key="e" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex-1 grid place-items-center text-center py-16">
-                  <div>
-                    <Code2 className="mx-auto h-12 w-12 text-slate-700" />
-                    <p className="mt-4 max-w-xs text-slate-500">{t.awaiting}</p>
-                  </div>
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
-          </motion.div>
+              <div ref={endRef} />
+            </div>
+          )}
         </div>
-      </div>
-    </section>
-  );
-}
 
-function Footer({ t }: { t: Dict }) {
-  const icons = [BookOpen, Code2, FileText];
-  return (
-    <footer className="border-t border-cyan-400/10 py-10">
-      <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-2 text-sm text-slate-500"><Dna className="h-4 w-4 text-cyan-400" />{t.footer}</div>
-        <div className="flex items-center gap-6 text-sm">
-          {t.links.map((l, i) => {
-            const I = icons[i];
-            return <a key={l} href="#" className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-300 transition"><I className="h-4 w-4" />{l}</a>;
-          })}
+        <div className="px-4 pb-5 sm:px-6">
+          <form onSubmit={(e) => { e.preventDefault(); send(input); }} className="glass-deep mx-auto w-full max-w-3xl rounded-3xl p-3">
+            <div className="flex items-end gap-2">
+              <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }} rows={1} placeholder="پیام خود را بنویسید…" className="max-h-36 min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-[15px] leading-6 text-slate-100 placeholder:text-slate-600 focus:outline-none" />
+              <button type="submit" disabled={!input.trim() || pending} className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-mint-400 to-teal-500 text-night-950 shadow-glow transition enabled:hover:brightness-110 enabled:active:scale-95 disabled:cursor-not-allowed disabled:opacity-40">
+                <Send size={19} strokeWidth={2.4} />
+              </button>
+            </div>
+          </form>
         </div>
-      </div>
-    </footer>
-  );
-}
-
-export default function Home() {
-  const [lang, setLang] = useState<Lang>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem("lang") as Lang) || "en";
-    }
-    return "en";
-  });
-  const [online, setOnline] = useState(true);
-  const t = dict[lang];
-
-  useEffect(() => {
-    document.documentElement.dir = lang === "fa" ? "rtl" : "ltr";
-    document.documentElement.lang = lang;
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("lang", lang);
-    }
-  }, [lang]);
-
-  useEffect(() => {
-    checkHealth().then(setOnline);
-    const id = setInterval(() => checkHealth().then(setOnline), 15000);
-    return () => clearInterval(id);
-  }, []);
-
-  return (
-    <div className={`min-h-screen overflow-x-hidden ${lang === "fa" ? "font-fa" : "font-sans"}`}>
-      <Navbar t={t} lang={lang} setLang={setLang} online={online} />
-      <Hero t={t} />
-      <Console t={t} />
-      <Footer t={t} />
+      </main>
     </div>
   );
 }
