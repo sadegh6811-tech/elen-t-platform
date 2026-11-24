@@ -1,58 +1,42 @@
-# Node & Next.js
-node_modules/
-.next/
-out/
-build/
-.vercel/
-
-# Environment Variables (CRITICAL)
-.env
-.env.local
-.env.production
-.vercel_token
-
-# Logs
-*.log
-
-# 🚨 BLOCKING CORE ENGINE & RESEARCH DATA (CRITICAL) 🚨
+# Ignore Python engine files
 *.py
-*.pyc
 __pycache__/
-*.csv
-*.tex
-*.pdf
-*.svg
-*.bak
-*.backup
-*.backup2
-*.bak_*
+*.pyc
+
+# Ignore DNE, DNA, bridge, and mathbot folders
+DNE/
+DNA/
+bridge/
 mathbot/
-backend/
-src_backup/
-data_*.csv
-lab_*.py
-physics_*.py
-frohlich_*.py
-quantum_*.py
-lindblad_*
-test_*.py
-fix_*.py
-patch_*.py
+
+# Ignore sensitive data
+*.csv
+*.log
+.env
+.env.*
+*.pdb
+
+# Ignore shell scripts
 *.sh
 
-# Allow specific files if needed (uncomment if you have TS/JS scripts you want)
-# !some_script.js
-.vercel
-.env*
-
-# Temporary test files
-upload_chip.js
-dna_chip_lattice.pdb
-check_db_columns.js
-upload_helix_to_vercel.js
-upload_tetra.js
-upload_to_vercel.js
-dna_helix.pdb
-*.backup-*
+# Ignore backup files
 *.backup
-src/db/index.ts.backup-*
+*.bak
+*.bak_*
+*.backup-*
+
+# Ignore build and cache
+.next/
+.vercel/
+node_modules/
+
+# Ignore OS files
+.DS_Store
+
+# Ignore LaTeX backups
+article.tex.backup*
+article_backup.tex
+article_final.tex
+*.svg
+*.pdf
+upload_chip.js
