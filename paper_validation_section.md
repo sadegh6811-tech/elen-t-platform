@@ -1,42 +1,47 @@
 # Comprehensive Validation (JOSS)
 
-To demonstrate the robustness and scalability of the Elen-t ecosystem, we performed 20 comprehensive benchmarks across 4 scientific domains (Physics, Drug Discovery, DNA Dynamics, Finance) and 5 dimensionalities (10D, 50D, 128D, 512D, 1024D). The results are available in `docs/joss_benchmark_results.csv`.
+To demonstrate the robustness and scalability of the Elen-t ecosystem, we performed 20 comprehensive benchmarks across 4 scientific domains (Physics, Drug Discovery, DNA Dynamics, Finance) and 5 dimensionalities (10D, 50D, 128D, 512D, 1024D). The results are available in `docs/joss_benchmark_results.csv` (500 samples), `docs/joss_benchmark_300_results.csv` (300 samples), and `docs/joss_benchmark_200_results.csv` (200 samples).
 
 ## Benchmark Strategy
 
 The platform uses a **Hybrid Orchestrator** that dynamically routes each problem to the most appropriate engine:
 
-- **LowDimEngine (STLSQ-based):** Used for dimensions ≤ 30, performing true symbolic law discovery.
-- **MathematicalEnsemble:** Used for dimensions > 30, combining Linear, RandomForest, and Polynomial models to achieve near-perfect predictive accuracy.
+- **LowDimEngine (STLSQ-based):** Used for dimensions ≤ 30, performing true symbolic law discovery (explicit mathematical equations). **Requires at least 300 samples for reliable results.**
+- **MathematicalEnsemble:** Used for dimensions > 30, combining Linear, RandomForest, and Polynomial models to achieve near-perfect predictive accuracy. **Stable across all sample sizes (200-500).**
 
-## Benchmark Summary
+## Benchmark Summary (300 samples)
 
 | Domain | Dimensions | Engine | R² | Time (s) |
 | :--- | :--- | :--- | :--- | :--- |
-| Physics | 10 | LowDim | 0.9937 | 0.18 |
-| Drug | 10 | Ensemble | 0.9986 | 1.19 |
-| DNA | 10 | Ensemble | 0.9985 | 1.10 |
-| Finance | 10 | Ensemble | 0.9997 | 1.24 |
-| Physics | 1024 | Ensemble | 0.9994 | 53.51 |
-| Drug | 1024 | Ensemble | 0.9996 | 50.75 |
-| DNA | 1024 | Ensemble | 0.9997 | 54.27 |
-| Finance | 1024 | Ensemble | 0.9998 | 52.48 |
+| Physics | 10 | LowDim | 0.9959 | 0.13 |
+| Physics | 1024 | Ensemble | 0.9988 | 24.06 |
+| Drug | 10 | Ensemble | 0.9982 | 0.75 |
+| Drug | 1024 | Ensemble | 0.9992 | 23.78 |
+| DNA | 10 | Ensemble | 0.9985 | 0.75 |
+| DNA | 1024 | Ensemble | 0.9994 | 24.25 |
+| Finance | 10 | Ensemble | 0.9997 | 1.31 |
+| Finance | 1024 | Ensemble | 0.9997 | 23.78 |
 
-**Average R² across all 20 tests: 0.9989**
+**Average R² across all 20 tests: 0.9987**
 
-## Key Findings
+## Stability Analysis (200 vs 300 vs 500 samples)
 
-1. **Interpretable Law Discovery (10D):** In low-dimensional regimes, the `LowDimEngine` successfully discovered explicit mathematical laws (e.g., physics at 10D achieved R² = 0.9937 with 5 active terms).
+To verify stability, we repeated the benchmark with 200, 300, and 500 samples:
 
-2. **High-Dimensional Predictive Accuracy (1024D):** In extreme dimensions, the `MathematicalEnsemble` achieved R² > 0.999 in all 4 domains, processing 500 samples in under 55 seconds on a mobile device (Android/Termux).
+| Sample Size | Average R² | LowDimEngine (10D) |
+| :--- | :--- | :--- |
+| 200 | 0.9985 | 0.5796 (unstable) |
+| 300 | 0.9987 | 0.9959 (stable) |
+| 500 | 0.9989 | 0.9937 (stable) |
 
-3. **Hybrid Architecture:** The platform automatically routes between engines based on dimensionality, ensuring both interpretability (low-dim) and predictive power (high-dim).
+**Conclusion:** The `MathematicalEnsemble` is stable across all sample sizes (R² > 0.9985), while the `LowDimEngine` requires at least 300 samples for reliable symbolic regression.
 
 ## Honest Limitations
 
-- **10D–30D:** The `LowDimEngine` performs true symbolic regression, producing explicit equations.
-- **50D+:** The `MathematicalEnsemble` provides strong predictive performance but produces weighted combinations of base models, not explicit symbolic laws. Interpretability decreases at these dimensions.
+- **Low Dimensions (≤ 30D):** The `LowDimEngine` performs true symbolic regression, producing explicit equations (e.g., `y = 2.5*X0 + 1.5*X1^2`). **Requires at least 300 samples.**
+- **High Dimensions (> 30D):** The `MathematicalEnsemble` provides strong predictive performance (R² > 0.99) but produces weighted combinations of base models (Linear, RandomForest, Polynomial), **not explicit symbolic laws**. Interpretability decreases at these dimensions.
+- **Trade-off:** The hybrid architecture makes a deliberate trade-off between interpretability (low-dim) and predictive accuracy (high-dim). This is an honest design choice, not a limitation.
 
 ## Conclusion
 
-These results demonstrate that Elen-t is a **general-purpose scientific orchestration platform** capable of operating across four distinct scientific domains and dimensionalities up to 1024D, with an average R² of 0.9989 across 20 benchmarks. The hybrid architecture ensures that both interpretability and performance are preserved where possible, while honestly documenting the shift from symbolic discovery to ensemble prediction in extreme dimensions.
+These results demonstrate that Elen-t is a **general-purpose scientific orchestration platform** capable of operating across four distinct scientific domains and dimensionalities up to 1024D, with an average R² of 0.9987 across 20 benchmarks. The hybrid architecture ensures that both interpretability and performance are preserved where possible, while honestly documenting the shift from symbolic discovery to ensemble prediction in extreme dimensions.
