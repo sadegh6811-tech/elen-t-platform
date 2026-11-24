@@ -27,6 +27,21 @@ To our knowledge, no existing open-source platform offers a unified, bilingual, 
 3. Returns an interpretable mathematical equation (not a black-box prediction).
 4. Visualizes the result as a 3D structure or formula in the browser.
 
+# State of the Field
+
+Several open-source tools exist for symbolic regression and scientific law discovery, but each has significant limitations:
+
+- **PySR (Cranmer, 2020):** A popular symbolic regression library, but it is Python-only and lacks a graphical interface. It must be run locally and is not accessible from a mobile device.
+- **SINDy (Brunton, 2016):** A powerful method for discovering dynamical systems, but it requires time-series data and does not support static datasets or 3D visualization.
+- **AI Feynman (Udrescu & Tegmark, 2020):** Excellent for discovering physics equations, but limited to low-dimensional data (typically ≤ 15D) and not designed for high-dimensional or noisy real-world datasets.
+- **XGBoost / Random Forest:** These provide high predictive accuracy but are black-box models. They cannot produce interpretable equations, making them unsuitable for scientific discovery or regulatory approval.
+
+Elen-k Health OS addresses these limitations by:
+1. Providing a **web-based interface** accessible from any device (including mobile).
+2. Supporting **both low-dimensional (interpretable equations) and high-dimensional (ensemble predictions)** regimes.
+3. Integrating **3D visualization** for molecular structures.
+4. Separating the **open-source interface** from **proprietary external engines**, ensuring reproducibility even when the underlying algorithms are closed-source.
+
 # Software Design
 
 The architecture consists of three layers:
@@ -70,6 +85,21 @@ The author (Sadegh Karami Chofteh) has **fully reviewed, edited, and validated**
 
 **AI disclosure statement:**
 This project complies with the JOSS AI usage policy (2026 update). No AI tool was used to autonomously generate the core scientific contributions of this work.
+
+# Acknowledgements
+
+The author thanks the open-source community for the tools that made this project possible: Next.js, FastAPI, React, Tailwind CSS, Framer Motion, 3Dmol.js, and scikit-learn. Special thanks to the developers of PySR and SINDy for their foundational work in symbolic regression and sparse identification, which inspired the design of the Elen-t engine.
+
+This work was supported by the author's independent research. No external funding was received.
+
+# References
+
+- Cranmer, M. (2020). PySR: Fast & Parallelized Symbolic Regression in Python. *Journal of Open Source Software*, 5(52), 2554. https://doi.org/10.21105/joss.02554
+- Brunton, S. L., Proctor, J. L., & Kutz, J. N. (2016). Discovering governing equations from data by sparse identification of nonlinear dynamical systems. *Proceedings of the National Academy of Sciences*, 113(15), 3932-3937. https://doi.org/10.1073/pnas.1517384113
+- Udrescu, S. M., & Tegmark, M. (2020). AI Feynman: A physics-inspired method for symbolic regression. *Science Advances*, 6(16), eaay2631. https://doi.org/10.1126/sciadv.aay2631
+- Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785-794. https://doi.org/10.1145/2939672.2939785
+- Breiman, L. (2001). Random Forests. *Machine Learning*, 45(1), 5-32. https://doi.org/10.1023/A:1010933404324
+- Rego, N., & Koes, D. (2015). 3Dmol.js: molecular visualization with WebGL. *Bioinformatics*, 31(8), 1322-1324. https://doi.org/10.1093/bioinformatics/btu829
 
 # Availability
 
